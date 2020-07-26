@@ -1,0 +1,68 @@
+config BR2_TARGET_EDK2
+	bool "EDK2"
+	depends on BR2_TOOLCHAIN_GCC_AT_LEAST_5
+	depends on BR2_x86_64 || BR2_aarch64
+	help
+	  EDK II is a modern, feature-rich, cross-platform firmware
+	  development environment for the UEFI and PI specifications.
+
+	  https://github.com/tianocore/tianocore.github.io/wiki/EDK-II
+
+if BR2_TARGET_EDK2
+
+config BR2_TARGET_EDK2_DEBUG
+    bool "Debug build"
+    help
+      Use the debug build type.
+
+choice
+    prompt "Platform"
+    default BR2_TARGET_EDK2_PLATFORM_OVMF_X64 if BR2_x86_64
+    default BR2_TARGET_EDK2_PLATFORM_ARM_VIRT_QEMU if BR2_aarch64
+
+config BR2_TARGET_EDK2_PLATFORM_OVMF_X64
+    bool "x86-64"
+    help
+      Configuration for x86-64.
+      This platform will boot from flash address 0x0.
+      It should therefore be used as the first bootloader.
+
+config BR2_TARGET_EDK2_PLATFORM_ARM_VIRT_QEMU
+	bool "ARM Virt Qemu (flash)"
+	help
+	  Configuration for QEMU targeting the Virt machine.
+	  This platform will only boot from flash address 0x0.
+	  It should therefore be used as the first bootloader.
+
+config BR2_TARGET_EDK2_PLATFORM_ARM_VIRT_QEMU_KERNEL
+	bool "ARM Virt Qemu (kernel)"
+	help
+	  Configuration for QEMU targeting the Virt machine.
+	  This platform can boot from either flash address 0x0 or via
+	  the Linux boot protocol. It can therefore be loaded by a
+	  previous bootloader like ARM Trusted Firmware or OP-TEE.
+
+config BR2_TARGET_EDK2_PLATFORM_ARM_VEXPRESS_FVP_AARCH64
+	bool "ARM VExpress FVP Aarch64"
+	select BR2_PACKAGE_HOST_EDK2_PLATFORMS
+	help
+	  Configuration for ARM Versatile Express targeting the
+	  Fixed Virtual Platform (FVP) AArch64 platform.
+
+config BR2_TARGET_EDK2_PLATFORM_QEMU_SBSA
+	bool "QEMU SBSA"
+	select BR2_PACKAGE_HOST_EDK2_PLATFORMS
+	select BR2_TARGET_ARM_TRUSTED_FIRMWARE
+	help
+	  Configuration for QEMU targeting the SBSA platform.
+
+	  Note that if you are building for the QEMU SBSA platform you
+	  should not configure EDK2 as the BL33 payload for ATF.
+	  The EDK2 build system itself will package the ATF binaries.
+
+endchoice
+
+endif
+
+comment "EDK2 needs a toolchain w/ gcc >= 5"
+	depends on !BR2_TOOLCHAIN_GCC_AT_LEAST_5

@@ -1,0 +1,6 @@
+config BR2_PACKAGE_RPI_VC_LOG
+	bool "rpi-vc-log"
+	help
+	  Tool to view the videocore logs on Raspberry Pi.
+
+	  https://github.com/paralin/rpi-vc-log
